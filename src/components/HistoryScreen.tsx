@@ -126,9 +126,6 @@ export function HistoryScreen({ state, today, onToggle }: HistoryScreenProps) {
                 &gt;
               </button>
             </div>
-            <p className="history-helper-copy history-calendar-helper">
-              Tap a day to review what was scheduled and update what you took.
-            </p>
           </div>
         </div>
 

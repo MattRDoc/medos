@@ -2565,6 +2565,63 @@ p {
   }
 }
 
+@media (max-width: 639px) {
+  .phone-frame.onboarding-mode {
+    overflow-y: auto;
+  }
+
+  .welcome-hero,
+  .onboarding-detail-screen {
+    min-height: auto;
+    gap: 18px;
+    padding:
+      clamp(18px, 4.8vw, 22px)
+      clamp(16px, 4.5vw, 20px)
+      calc(18px + var(--safe-bottom));
+  }
+
+  .welcome-frame {
+    align-content: start;
+    gap: 18px;
+  }
+
+  .welcome-visual {
+    min-height: clamp(244px, 34vh, 312px);
+  }
+
+  .visual-hero-card {
+    width: min(100%, 312px);
+    border-radius: 28px;
+    padding: 16px;
+  }
+
+  .onboarding-detail-screen {
+    grid-template-rows: auto auto;
+    align-content: start;
+  }
+
+  .onboarding-detail-body,
+  .onboarding-medication-body,
+  .onboarding-review-body {
+    gap: 18px;
+  }
+
+  .onboarding-medication-body .stack-lg {
+    gap: 22px;
+  }
+
+  .onboarding-medication-body .stack-md,
+  .onboarding-review-list {
+    gap: 16px;
+  }
+
+  .onboarding-detail-actions,
+  .onboarding-review-footer {
+    gap: 10px;
+    padding-top: 0;
+  }
+}
+
 @media (display-mode: standalone) {
   .app-shell {
     padding-top: max(20px, calc(var(--safe-top) + 10px));

@@ -37,41 +37,30 @@ export function SettingsScreen({
         <div>
           <p className="eyebrow">Settings</p>
           <h1>Local controls</h1>
+          <p className="screen-helper-copy">
+            Backups, appearance, and device-only controls for this copy of MedOS.
+          </p>
         </div>
       </header>
 
-      <p className="screen-helper-copy">
-        Manage backups and device-only settings for this copy of MedOS.
-      </p>
-
       <section className="panel stack-md native-section-panel">
         <div className="stack-sm">
-          <p className="eyebrow">Privacy</p>
+          <p className="eyebrow">Data</p>
           <h2>Stored on this device</h2>
         </div>
-        <p className="muted">Your logs are stored locally in this browser on this device.</p>
-        <div className="feature-grid">
-          <article className="mini-card native-stat-card">
-            <strong>No account required</strong>
-            <span>Open the app and track your routine.</span>
-          </article>
-          <article className="mini-card native-stat-card">
-            <strong>No cloud sync</strong>
-            <span>Your routine and logs stay in this browser unless you export them.</span>
-          </article>
-          <article className="mini-card native-stat-card">
-            <strong>Backups recommended</strong>
-            <span>Local browser data can be cleared.</span>
-          </article>
+        <p className="muted">Nothing is synced automatically. Export a backup if you want a portable copy of your routine and history.</p>
+        <div className="detail-chip">
+          <span className="detail-chip-label">Storage model</span>
+          <span>Private, local-first, and browser-based. Clear your browser data and MedOS is cleared too.</span>
         </div>
       </section>
 
       <section className="panel stack-md native-section-panel">
         <div className="stack-sm">
           <p className="eyebrow">Appearance</p>
-          <h2>Choose your palette</h2>
+          <h2>Choose a mood</h2>
         </div>
-        <p className="muted">Pick the visual tone that feels best for your routine.</p>
+        <p className="muted">Each theme keeps the interface calm, but shifts the tone from bright utility to softer evening focus.</p>
         <div className="theme-grid">
           {themeOptions.map((option) => (
             <button

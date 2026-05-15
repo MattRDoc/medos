@@ -17,9 +17,9 @@ interface HistoryScreenProps {
 }
 
 function getCalendarStatusLabel(kind: 'complete' | 'partial' | 'missed' | 'none') {
-  if (kind === 'complete') return 'Done';
-  if (kind === 'partial') return 'Some';
-  if (kind === 'missed') return 'Missed';
+  if (kind === 'complete') return '●';
+  if (kind === 'partial') return '◐';
+  if (kind === 'missed') return '—';
   return '';
 }
 
@@ -72,6 +72,8 @@ export function HistoryScreen({ state, today, onToggle }: HistoryScreenProps) {
     () => (selectedDate ? getCompletedMedicationIdsForDate(state.logs, selectedDate) : new Set<string>()),
     [selectedDate, state.logs],
   );
+  const trackedDays = monthDates.filter((item) => item.status.kind !== 'none').length;
+  const completedDays = monthDates.filter((item) => item.status.kind === 'complete').length;
 
   useEffect(() => {
     if (!selectedDate || !selectedStatus || selectedStatus.kind === 'none') return;
@@ -87,34 +89,47 @@ export function HistoryScreen({ state, today, onToggle }: HistoryScreenProps) {
         <div>
           <p className="eyebrow">History</p>
           <h1>Tracking archive</h1>
+          <p className="screen-helper-copy">
+            Review completed days, spot gaps, and correct anything that needs a cleaner record.
+          </p>
         </div>
       </header>
 
-      <section className="history-streak-section">
+      <section className="split-grid history-overview-grid">
         <article className="panel native-stat-card history-streak-card">
           <strong>Current streak</strong>
           <span>{getCurrentStreak(state, today)} days</span>
           <small className="history-streak-note">Fully completed days in a row</small>
         </article>
+        <article className="panel native-stat-card history-streak-card">
+          <strong>This month</strong>
+          <span>{completedDays} complete</span>
+          <small className="history-streak-note">{trackedDays} tracked day{trackedDays === 1 ? '' : 's'} so far</small>
+        </article>
       </section>
 
-      <section className="panel stack-md native-section-panel">
-        <div className="section-head">
-          <h2>{formatMonthLabel(month)}</h2>
-          <div className="button-row compact">
+      <section className="panel stack-md native-section-panel history-calendar-shell">
+        <div className="history-calendar-toolbar">
+          <div className="stack-sm">
+            <p className="eyebrow">Monthly view</p>
+            <h2>{formatMonthLabel(month)}</h2>
+          </div>
+          <div className="button-row compact history-calendar-nav">
             <button
-              className="ghost-button"
+              className="ghost-button small"
               type="button"
               onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))}
+              aria-label="Previous month"
             >
-              Prev
+              ←
             </button>
             <button
-              className="ghost-button"
+              className="ghost-button small"
               type="button"
               onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))}
+              aria-label="Next month"
             >
-              Next
+              →
             </button>
           </div>
         </div>
@@ -157,7 +172,7 @@ export function HistoryScreen({ state, today, onToggle }: HistoryScreenProps) {
       </section>
 
       {selectedDate && selectedStatus && selectedStatus.kind !== 'none' && (
-        <section ref={selectedDayRef} className="panel stack-md native-section-panel">
+        <section ref={selectedDayRef} className="panel stack-md native-section-panel history-detail-shell">
           <div className="section-head">
             <div className="stack-sm">
               <p className="eyebrow">Editable history</p>
@@ -192,7 +207,7 @@ export function HistoryScreen({ state, today, onToggle }: HistoryScreenProps) {
                   {group.medications.map((medication) => {
                     const complete = selectedCompletedMedicationIds.has(medication.id);
                     return (
-                      <article key={medication.id} className={`med-card native-med-card${complete ? ' completed' : ''}`}>
+                      <article key={medication.id} className={`med-card native-med-card med-card-modern${complete ? ' completed' : ''}`}>
                         <div className="med-card-main">
                           <div className="med-card-title">
                             <div className="med-card-time-icon" aria-hidden="true">
@@ -202,6 +217,11 @@ export function HistoryScreen({ state, today, onToggle }: HistoryScreenProps) {
                               <p className="eyebrow">{group.slot}</p>
                               <h3>{medication.name}</h3>
                               <p className="med-meta">{medication.dose}</p>
+                              <div className="med-card-status-row">
+                                <span className={`med-card-status-pill${complete ? ' complete' : ''}`}>
+                                  {complete ? 'Logged' : 'Not logged'}
+                                </span>
+                              </div>
                             </div>
                           </div>
                           <button

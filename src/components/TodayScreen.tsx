@@ -1,6 +1,12 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { formatTodayLabel, getGreeting } from '../lib/date';
-import { getCompletedMedicationIdsForDate, getDayStatus, getScheduledMedicationsForDate, groupMedicationsByTime } from '../lib/medications';
+import {
+  getCompletedMedicationIdsForDate,
+  getCurrentStreak,
+  getDayStatus,
+  getScheduledMedicationsForDate,
+  groupMedicationsByTime,
+} from '../lib/medications';
 import type { AppState } from '../types';
 import { MedicationTimeIcon } from './MedicationEditor';
 
@@ -35,6 +41,7 @@ export function TodayScreen({ state, today, now, onToggle }: TodayScreenProps) {
   const scheduled = getScheduledMedicationsForDate(state.medications, today);
   const dayStatus = getDayStatus(state, today);
   const progress = dayStatus.total ? Math.round((dayStatus.completed / dayStatus.total) * 100) : 0;
+  const streak = getCurrentStreak(state, today);
   const completedMedicationIds = useMemo(() => getCompletedMedicationIdsForDate(state.logs, today), [state.logs, today]);
   const nextGroup = findNextGroup(scheduled, completedMedicationIds);
   const grouped = groupMedicationsByTime(scheduled);
@@ -96,6 +103,13 @@ export function TodayScreen({ state, today, now, onToggle }: TodayScreenProps) {
         <div className="today-header-copy today-header-animated">
           <p className="eyebrow">{todayLabel.full}</p>
           <h1>{getGreeting(now)}</h1>
+          <p className="screen-helper-copy today-intro-copy">
+            {nextGroup
+              ? 'Your next dose window is ready to review.'
+              : dayStatus.total === 0
+                ? 'There is nothing scheduled for today.'
+                : 'You are clear for the rest of the day.'}
+          </p>
         </div>
       </header>
 
@@ -118,51 +132,62 @@ export function TodayScreen({ state, today, now, onToggle }: TodayScreenProps) {
             </div>
           </div>
         ) : (
-          <div
-            className="progress-ring"
-            style={{ '--progress': `${animatedProgress}` } as CSSProperties}
-          >
-            <svg className="progress-ring-svg" viewBox="0 0 120 120" aria-hidden="true">
-              <circle className="progress-ring-track" cx="60" cy="60" r="44" />
-              <circle
-                className="progress-ring-value"
-                cx="60"
-                cy="60"
-                r="44"
-                style={{
-                  strokeDasharray: `${2 * Math.PI * 44}`,
-                  strokeDashoffset: `${2 * Math.PI * 44 * (1 - animatedProgress / 100)}`,
-                }}
-              />
-            </svg>
-            <div>
-              <p className="eyebrow">Today's routine</p>
+          <div className="today-hero-grid">
+            <div className="today-hero-copy">
+              <p className="eyebrow">Up next</p>
               <h2>
-                {dayStatus.completed} of {dayStatus.total}
+                {nextGroup ? nextGroup.slot : dayStatus.total === 0 ? 'No doses today' : 'All caught up'}
               </h2>
               <p className="muted">
-                {dayStatus.total === 0
-                  ? 'No active medications scheduled today.'
-                  : dayStatus.completed === dayStatus.total
-                    ? 'Routine complete'
-                    : 'On track'}
+                {nextGroup
+                  ? `${nextGroup.medications.filter((medication) => !completedMedicationIds.has(medication.id)).length} medication${nextGroup.medications.filter((medication) => !completedMedicationIds.has(medication.id)).length === 1 ? '' : 's'} still waiting in this window.`
+                  : dayStatus.total === 0
+                    ? 'No active medications are scheduled for this date.'
+                    : 'Everything scheduled for today has already been logged.'}
               </p>
+            </div>
+            <div
+              className="progress-ring progress-ring-compact"
+              style={{ '--progress': `${animatedProgress}` } as CSSProperties}
+            >
+              <svg className="progress-ring-svg" viewBox="0 0 120 120" aria-hidden="true">
+                <circle className="progress-ring-track" cx="60" cy="60" r="44" />
+                <circle
+                  className="progress-ring-value"
+                  cx="60"
+                  cy="60"
+                  r="44"
+                  style={{
+                    strokeDasharray: `${2 * Math.PI * 44}`,
+                    strokeDashoffset: `${2 * Math.PI * 44 * (1 - animatedProgress / 100)}`,
+                  }}
+                />
+              </svg>
+              <div>
+                <p className="eyebrow">Today</p>
+                <h3>{progress}%</h3>
+                <p className="muted">
+                  {dayStatus.completed} of {dayStatus.total}
+                </p>
+              </div>
             </div>
           </div>
         )}
       </section>
 
-      <section className="today-next-up native-stat-card mini-card">
-        <p className="eyebrow">Next up</p>
-        <span className="today-next-up-copy">
-            {nextGroup
-              ? `${nextGroup.slot} · ${
-                  nextGroup.medications.filter(
-                    (medication) => !completedMedicationIds.has(medication.id),
-                  ).length
-                } remaining`
-              : 'Everything is logged for today.'}
-        </span>
+      <section className="split-grid today-metrics-grid">
+        <article className="mini-card native-stat-card today-stat-card">
+          <p className="eyebrow">Completion</p>
+          <strong>{dayStatus.completed} of {dayStatus.total}</strong>
+          <span className="today-next-up-copy">
+            {dayStatus.total === 0 ? 'Nothing scheduled' : progress === 100 ? 'Routine complete' : `${progress}% of today logged`}
+          </span>
+        </article>
+        <article className="mini-card native-stat-card today-stat-card">
+          <p className="eyebrow">Streak</p>
+          <strong>{streak} days</strong>
+          <span className="today-next-up-copy">Fully completed days in a row</span>
+        </article>
       </section>
 
       {grouped.length === 0 ? (
@@ -188,7 +213,7 @@ export function TodayScreen({ state, today, now, onToggle }: TodayScreenProps) {
                   const complete = completedMedicationIds.has(medication.id);
 
                   return (
-                    <article key={medication.id} className={`med-card native-med-card${complete ? ' completed' : ''}`}>
+                    <article key={medication.id} className={`med-card native-med-card med-card-modern${complete ? ' completed' : ''}`}>
                       <div className="med-card-main">
                         <div className="med-card-title">
                           <div className="med-card-time-icon" aria-hidden="true">
@@ -198,6 +223,11 @@ export function TodayScreen({ state, today, now, onToggle }: TodayScreenProps) {
                             <p className="eyebrow">{medication.timeOfDay}</p>
                             <h3>{medication.name}</h3>
                             <p className="med-meta">{medication.dose}</p>
+                            <div className="med-card-status-row">
+                              <span className={`med-card-status-pill${complete ? ' complete' : ''}`}>
+                                {complete ? 'Logged' : 'Ready'}
+                              </span>
+                            </div>
                           </div>
                         </div>
                         <button

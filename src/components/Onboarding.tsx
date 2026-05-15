@@ -52,52 +52,57 @@ export function Onboarding({
                   Track daily doses, stay consistent, and keep your logs local to this device.
                 </p>
               </div>
+              <div className="welcome-principles">
+                <span className="detail-chip">
+                  <span className="detail-chip-label">Focused</span>
+                  <span>One clear routine, one-tap logging, no clutter.</span>
+                </span>
+                <span className="detail-chip">
+                  <span className="detail-chip-label">Private</span>
+                  <span>No account, no sync, no backend server.</span>
+                </span>
+              </div>
             </header>
 
             <div className="welcome-visual" aria-hidden="true">
-              <div className="visual-grid" />
-              <div className="visual-pulse visual-pulse-a" />
-              <div className="visual-pulse visual-pulse-b" />
-              <div className="visual-orbit orbit-a" />
-              <div className="visual-orbit orbit-b" />
               <div className="visual-hero-card">
                 <div className="visual-card-top">
                   <span className="visual-kicker">Today&apos;s routine</span>
-                  <span className="local-chip compact">Local only</span>
+                  <span className="local-chip compact">On this device</span>
                 </div>
-                <div className="visual-ring-shell">
-                  <div className="visual-ring">
-                    <div className="visual-ring-core">
-                      <div className="visual-ring-label">
-                        <strong>1 of 4</strong>
-                        <span>logged</span>
-                      </div>
-                    </div>
+                <div className="visual-summary-row">
+                  <div className="visual-summary-block">
+                    <strong>Morning</strong>
+                    <span>2 meds ready</span>
+                  </div>
+                  <div className="visual-summary-block">
+                    <strong>25%</strong>
+                    <span>Already logged</span>
                   </div>
                 </div>
-                <div className="visual-card-body">
-                  <strong>One-tap logging</strong>
-                  <p>Build your medication schedule once, then log each dose in seconds.</p>
+                <div className="visual-card-body visual-card-body-left">
+                  <strong>Build once. Check off fast.</strong>
+                  <p>MedOS keeps the daily loop simple, readable, and calm enough to trust at a glance.</p>
                 </div>
-                <div className="visual-card-footer">
-                  <span className="visual-footer-pill">
-                    <span className="visual-footer-pill-icon" aria-hidden="true">
-                      <MedicationTimeIcon option="Morning" />
+                <div className="visual-med-list">
+                  <div className="visual-med-row">
+                    <span className="visual-footer-pill">
+                      <span className="visual-footer-pill-icon" aria-hidden="true">
+                        <MedicationTimeIcon option="Morning" />
+                      </span>
+                      <span>Vitamin D</span>
                     </span>
-                    <span>Morning</span>
-                  </span>
-                  <span className="visual-footer-pill">
-                    <span className="visual-footer-pill-icon" aria-hidden="true">
-                      <MedicationTimeIcon option="Afternoon" />
+                    <span className="visual-status-pill">Due now</span>
+                  </div>
+                  <div className="visual-med-row muted-row">
+                    <span className="visual-footer-pill">
+                      <span className="visual-footer-pill-icon" aria-hidden="true">
+                        <MedicationTimeIcon option="Evening" />
+                      </span>
+                      <span>Sertraline</span>
                     </span>
-                    <span>Afternoon</span>
-                  </span>
-                  <span className="visual-footer-pill">
-                    <span className="visual-footer-pill-icon" aria-hidden="true">
-                      <MedicationTimeIcon option="Evening" />
-                    </span>
-                    <span>Evening</span>
-                  </span>
+                    <span className="visual-status-pill quiet">Later</span>
+                  </div>
                 </div>
               </div>
             </div>

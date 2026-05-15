@@ -1,5 +1,12 @@
-const CACHE_NAME = 'medos-shell-v1';
-const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './icons/app-icon.svg', './icons/apple-touch-icon.png', './icons/icon-192.png', './icons/icon-512.png'];
+const CACHE_NAME = 'medos-shell-v2';
+const APP_SHELL = [
+  './',
+  './index.html',
+  './manifest.webmanifest',
+  './icons/app-icon.svg',
+  './icons/apple-touch-icon.svg',
+  './icons/icon-maskable.svg',
+];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)));

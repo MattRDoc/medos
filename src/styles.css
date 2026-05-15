@@ -2601,7 +2601,7 @@ p {
 
   .welcome-frame {
     align-content: start;
-    gap: 22px;
+    gap: 18px;
     max-width: 390px;
   }
 
@@ -2627,7 +2627,7 @@ p {
 
   .welcome-visual {
     min-height: clamp(228px, 30vh, 280px);
-    margin: 4px 0;
+    margin: 10px 0 28px;
   }
 
   .orbit-a {

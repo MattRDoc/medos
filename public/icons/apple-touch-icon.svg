@@ -1,12 +1,40 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
   <defs>
-    <linearGradient id="apple-bg" x1="0" x2="1" y1="0" y2="1">
-      <stop offset="0%" stop-color="#15222a" />
-      <stop offset="100%" stop-color="#0c1116" />
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#14232b" />
+      <stop offset="55%" stop-color="#101920" />
+      <stop offset="100%" stop-color="#0c1217" />
     </linearGradient>
+    <radialGradient id="ambientA" cx="30%" cy="22%" r="64%">
+      <stop offset="0%" stop-color="#59d8e1" stop-opacity=".22" />
+      <stop offset="58%" stop-color="#59d8e1" stop-opacity=".05" />
+      <stop offset="100%" stop-color="#59d8e1" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="capsuleLeft" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#7be8ef" />
+      <stop offset="100%" stop-color="#55c9d1" />
+    </linearGradient>
+    <linearGradient id="capsuleRight" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#f6fdff" />
+      <stop offset="100%" stop-color="#dcecf1" />
+    </linearGradient>
+    <linearGradient id="capsuleSheen" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity=".34" />
+      <stop offset="42%" stop-color="#ffffff" stop-opacity=".08" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+    </linearGradient>
+    <clipPath id="capsuleClip">
+      <rect x="42" y="70" width="96" height="40" rx="20" />
+    </clipPath>
   </defs>
-  <rect width="180" height="180" rx="44" fill="url(#apple-bg)" />
-  <circle cx="90" cy="90" r="56" fill="rgba(0,219,231,0.12)" />
-  <rect x="44" y="44" width="92" height="92" rx="28" fill="rgba(255,255,255,0.04)" stroke="#45d9e5" stroke-opacity=".5" />
-  <path d="M80 64h20v20h20v12h-20v20H80V96H60V84h20z" fill="#f2fdff" />
+  <rect width="180" height="180" rx="44" fill="url(#bg)" />
+  <circle cx="60" cy="54" r="72" fill="url(#ambientA)" />
+  <ellipse cx="90" cy="118" rx="44" ry="9" fill="#081117" fill-opacity=".2" />
+  <g clip-path="url(#capsuleClip)">
+    <rect x="42" y="70" width="48" height="40" fill="url(#capsuleLeft)" />
+    <rect x="90" y="70" width="48" height="40" fill="url(#capsuleRight)" />
+    <rect x="42" y="70" width="96" height="40" fill="url(#capsuleSheen)" />
+  </g>
+  <rect x="42" y="70" width="96" height="40" rx="20" fill="none" stroke="#f6fdff" stroke-opacity=".22" />
+  <path d="M90 76v28" stroke="#0c1d24" stroke-opacity=".18" stroke-width="1.5" stroke-linecap="round" />
 </svg>

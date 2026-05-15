@@ -107,7 +107,7 @@ export function SettingsScreen({
           <p className="eyebrow">Reset</p>
           <h2>Clear this device</h2>
         </div>
-        <p className="muted">This removes medications, logs, and settings from this browser.</p>
+        <p className="muted">This removes medicines, logs, and settings from this browser.</p>
         <button className="ghost-button danger" type="button" onClick={onReset}>
           Reset data
         </button>

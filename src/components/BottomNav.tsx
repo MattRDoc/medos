@@ -7,8 +7,9 @@ function NavIcon({ id }: { id: (typeof items)[number]['id'] }) {
   if (id === 'today') {
     return (
       <svg viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="12" cy="12" r="5.5" />
-        <path d="M12 2.75v2.5M12 18.75v2.5M21.25 12h-2.5M5.25 12h-2.5" />
+        <path d="M7.25 3.75v2.5M16.75 3.75v2.5M5.25 7.75h13.5" />
+        <rect x="4.25" y="5.25" width="15.5" height="15" rx="3.2" />
+        <path d="m8.5 14 2.2 2.1 4.8-5" />
       </svg>
     );
   }
@@ -16,10 +17,9 @@ function NavIcon({ id }: { id: (typeof items)[number]['id'] }) {
   if (id === 'history') {
     return (
       <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M6 5.5h12M6 12h12M6 18.5h12" />
-        <circle cx="7.5" cy="5.5" r="1" />
-        <circle cx="10.5" cy="12" r="1" />
-        <circle cx="14.5" cy="18.5" r="1" />
+        <path d="M5.25 17.25h13.5" />
+        <path d="M6.5 15.25 10 11.7l2.7 2.55 4.9-6" />
+        <path d="M17.75 8.25h-3.4M17.75 8.25v3.4" />
       </svg>
     );
   }
@@ -27,15 +27,17 @@ function NavIcon({ id }: { id: (typeof items)[number]['id'] }) {
   if (id === 'routine') {
     return (
       <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M12 5.25v13.5M5.25 12h13.5" />
+        <path d="M8.25 6.5h10M8.25 12h10M8.25 17.5h10" />
+        <path d="M4.75 6.5h.01M4.75 12h.01M4.75 17.5h.01" />
       </svg>
     );
   }
 
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M12 4.75v2.1M12 17.15v2.1M19.25 12h-2.1M6.85 12h-2.1M16.98 7.02l-1.48 1.48M8.5 15.5l-1.48 1.48M16.98 16.98l-1.48-1.48M8.5 8.5 7.02 7.02" />
-      <circle cx="12" cy="12" r="3.15" />
+      <path d="M4.5 7.25h8.25M16.75 7.25h2.75M4.5 16.75h2.75M11.25 16.75h8.25" />
+      <circle cx="14.5" cy="7.25" r="2" />
+      <circle cx="9.5" cy="16.75" r="2" />
     </svg>
   );
 }

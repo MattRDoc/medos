@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { groupMedicationsByTime } from '../lib/medications';
-import { MedicationEditor, MedicationTimeIcon } from './MedicationEditor';
+import { MedicationEditor } from './MedicationEditor';
+import { WindowHeader } from './WindowHeader';
 import type { Medication, MedicationDraft } from '../types';
 
 interface RoutineScreenProps {
@@ -22,11 +23,16 @@ export function RoutineScreen({
 }: RoutineScreenProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isComposerOpen, setIsComposerOpen] = useState(medications.length === 0);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const editingMedication = medications.find((medication) => medication.id === editingId);
   const groups = groupMedicationsByTime(medications);
   const activeCount = medications.filter((medication) => medication.active).length;
+  const activeSummary = `${activeCount} active medicine${activeCount === 1 ? '' : 's'}`;
+  const windowSummary = `${groups.length} time window${groups.length === 1 ? '' : 's'}`;
   const editorRef = useRef<HTMLElement | null>(null);
   const editorBodyRef = useRef<HTMLDivElement | null>(null);
+  const openMenuRef = useRef<HTMLDivElement | null>(null);
+  const triggerRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   const scrollToComposer = () => {
     editorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -46,106 +52,166 @@ export function RoutineScreen({
     scrollToComposer();
   }, [editingMedication]);
 
+  useEffect(() => {
+    if (!openMenuId) return undefined;
+
+    const closeMenu = () => setOpenMenuId(null);
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!openMenuRef.current?.contains(event.target as Node)) {
+        closeMenu();
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      event.preventDefault();
+      const trigger = triggerRefs.current[openMenuId];
+      closeMenu();
+      window.setTimeout(() => trigger?.focus(), 0);
+    };
+
+    document.addEventListener('pointerdown', handlePointerDown, true);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown, true);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [openMenuId]);
+
   return (
     <div className="screen-stack">
       <header className="topbar native-header-card">
         <div>
           <p className="eyebrow">Routine</p>
-          <h1>Medication schedule</h1>
+          <h1>Your routine</h1>
           <p className="screen-helper-copy">
-            Build once, then keep the schedule tidy with quick edits and lightweight controls.
+            Manage medicines, doses, and daily windows.
           </p>
         </div>
       </header>
 
-      <section className="split-grid routine-summary">
-        <article className="mini-card native-stat-card">
-          <p className="eyebrow">Active</p>
-          <strong>{activeCount}</strong>
-          <span>{activeCount === 1 ? 'Medication live' : 'Medications live'}</span>
-        </article>
-        <article className="mini-card native-stat-card">
-          <p className="eyebrow">Windows</p>
-          <strong>{groups.length}</strong>
-          <span>{groups.length === 1 ? 'Time slot configured' : 'Time slots configured'}</span>
-        </article>
+      <section className="routine-summary-line" aria-label="Routine overview">
+        <span>{activeSummary}</span>
+        <span aria-hidden="true">·</span>
+        <span>{windowSummary}</span>
       </section>
 
       {groups.length === 0 ? (
         <div className="empty-panel">
           <h3>No routine yet</h3>
-          <p>Add medication entries to create your schedule.</p>
+          <p>Add medicines to create your routine.</p>
         </div>
       ) : (
         groups.map((group) => (
-          <section key={group.slot} className="panel stack-md native-section-panel">
-            <div className="section-head">
-              <h2>{group.slot}</h2>
-              <span className="muted">{group.medications.length} items</span>
-            </div>
-            <div className="stack-md">
+          <section key={group.slot} className="window-group routine-window-group">
+            <WindowHeader
+              slot={group.slot}
+              primary={`${group.medications.length} medicine${group.medications.length === 1 ? '' : 's'}`}
+            />
+            <div className="window-medicine-list">
               {group.medications.map((medication, index) => (
-                <article key={medication.id} className={`med-card native-med-card med-card-modern${medication.active ? '' : ' inactive'}`}>
+                <article key={medication.id} className={`medicine-row routine-medicine-row${medication.active ? '' : ' inactive'}`}>
                   <div className="med-card-main">
-                    <div className="med-card-title">
-                      <div className="med-card-time-icon" aria-hidden="true">
-                        <MedicationTimeIcon option={medication.timeOfDay === 'Custom' ? 'Morning' : medication.timeOfDay} />
-                      </div>
+                    <div className="med-card-title routine-row-title">
                       <div className="med-card-copy">
-                        <p className="eyebrow">{medication.timeOfDay}</p>
                         <h3>{medication.name}</h3>
-                        <p className="med-meta">{medication.dose}</p>
-                        <div className="med-card-status-row">
-                          <span className={`med-card-status-pill${medication.active ? ' live' : ' paused'}`}>
-                            {medication.active ? 'Active' : 'Paused'}
-                          </span>
-                        </div>
+                        <p className="med-meta">{medication.dose}{medication.active ? '' : ' · Paused'}</p>
                       </div>
                     </div>
-                    <button
-                      className={`toggle-button routine-live-toggle${medication.active ? ' complete' : ''}`}
-                      type="button"
-                      onClick={() => onToggleActive(medication.id)}
-                    >
-                      {medication.active ? 'Live' : 'Paused'}
-                    </button>
-                  </div>
-                  {medication.notes && (
-                    <div className="med-card-support">
-                      <div className="med-note-block">
-                        <p className="eyebrow">Note</p>
-                        <p className="med-note">{medication.notes}</p>
-                      </div>
-                    </div>
-                  )}
-                  <div className="button-row compact routine-card-actions">
-                    <div className="button-row compact">
+                    <div className="routine-primary-actions">
                       <button className="ghost-button small" type="button" onClick={() => handleEditMedication(medication.id)}>
                         Edit
                       </button>
-                      <button className="ghost-button danger small" type="button" onClick={() => onDeleteMedication(medication.id)}>
-                        Delete
-                      </button>
-                    </div>
-                    <div className="button-row compact">
-                      <button
-                        className="ghost-button small"
-                        type="button"
-                        disabled={index === 0}
-                        onClick={() => onMoveMedication(medication.id, -1)}
+                      <div
+                        ref={openMenuId === medication.id ? openMenuRef : undefined}
+                        className={`routine-overflow-menu${openMenuId === medication.id ? ' open' : ''}`}
                       >
-                        Move up
-                      </button>
-                      <button
-                        className="ghost-button small"
-                        type="button"
-                        disabled={index === group.medications.length - 1}
-                        onClick={() => onMoveMedication(medication.id, 1)}
-                      >
-                        Move down
-                      </button>
+                        <button
+                          ref={(node) => {
+                            triggerRefs.current[medication.id] = node;
+                          }}
+                          className="routine-overflow-trigger"
+                          type="button"
+                          aria-label={`More actions for ${medication.name}`}
+                          aria-haspopup="menu"
+                          aria-expanded={openMenuId === medication.id}
+                          aria-controls={`routine-menu-${medication.id}`}
+                          onClick={() =>
+                            setOpenMenuId((current) => (current === medication.id ? null : medication.id))
+                          }
+                        >
+                          <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="6.5" cy="12" r="1.2" />
+                            <circle cx="12" cy="12" r="1.2" />
+                            <circle cx="17.5" cy="12" r="1.2" />
+                          </svg>
+                        </button>
+                        {openMenuId === medication.id && (
+                          <div
+                            id={`routine-menu-${medication.id}`}
+                            className={`routine-overflow-list${index === group.medications.length - 1 ? ' open-up' : ''}`}
+                            role="menu"
+                            aria-label={`Actions for ${medication.name}`}
+                          >
+                            <button
+                              className="ghost-button small"
+                              type="button"
+                              role="menuitem"
+                              onClick={() => {
+                                setOpenMenuId(null);
+                                onToggleActive(medication.id);
+                              }}
+                            >
+                              {medication.active ? 'Pause' : 'Resume'}
+                            </button>
+                            {group.medications.length > 1 && index > 0 && (
+                              <button
+                                className="ghost-button small"
+                                type="button"
+                                role="menuitem"
+                                onClick={() => {
+                                  setOpenMenuId(null);
+                                  onMoveMedication(medication.id, -1);
+                                }}
+                              >
+                                Move up
+                              </button>
+                            )}
+                            {group.medications.length > 1 && index < group.medications.length - 1 && (
+                              <button
+                                className="ghost-button small"
+                                type="button"
+                                role="menuitem"
+                                onClick={() => {
+                                  setOpenMenuId(null);
+                                  onMoveMedication(medication.id, 1);
+                                }}
+                              >
+                                Move down
+                              </button>
+                            )}
+                            <button
+                              className="ghost-button danger small"
+                              type="button"
+                              role="menuitem"
+                              onClick={() => {
+                                setOpenMenuId(null);
+                                onDeleteMedication(medication.id);
+                              }}
+                            >
+                              Delete medicine
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
+                  {medication.notes && (
+                    <div className="med-card-support">
+                      <p className="medicine-note">{medication.notes}</p>
+                    </div>
+                  )}
                 </article>
               ))}
             </div>
@@ -167,8 +233,8 @@ export function RoutineScreen({
           aria-expanded={isComposerOpen}
         >
           <div>
-            <p className="eyebrow">Medication</p>
-            <h2>{editingMedication ? 'Edit medication' : 'Add medication'}</h2>
+            <p className="eyebrow">Medicine</p>
+            <h2>{editingMedication ? 'Edit medicine' : 'Add medicine'}</h2>
             {!editingMedication && <p className="routine-composer-subcopy">Keep the routine lean, readable, and easy to update.</p>}
           </div>
           <span className="routine-composer-toggle-icon" aria-hidden="true">
@@ -179,8 +245,8 @@ export function RoutineScreen({
         {isComposerOpen && (
           <div ref={editorBodyRef} className="panel native-section-panel routine-editor-panel">
             <MedicationEditor
-              title={editingMedication ? 'Edit medication' : 'Add medication'}
-              submitLabel={editingMedication ? 'Save changes' : 'Add medication'}
+              title={editingMedication ? 'Edit medicine' : 'Add medicine'}
+              submitLabel={editingMedication ? 'Save changes' : 'Add medicine'}
               initialMedication={editingMedication}
               showHeader={false}
               onSubmit={(draft) => {

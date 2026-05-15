@@ -8,7 +8,6 @@ import {
   groupMedicationsByTime,
 } from '../lib/medications';
 import type { AppState } from '../types';
-import { MedicationTimeIcon } from './MedicationEditor';
 
 interface HistoryScreenProps {
   state: AppState;
@@ -17,9 +16,9 @@ interface HistoryScreenProps {
 }
 
 function getCalendarStatusLabel(kind: 'complete' | 'partial' | 'missed' | 'none') {
-  if (kind === 'complete') return '●';
-  if (kind === 'partial') return '◐';
-  if (kind === 'missed') return '—';
+  if (kind === 'complete') return 'Taken';
+  if (kind === 'partial') return 'Some taken';
+  if (kind === 'missed') return 'Missed';
   return '';
 }
 
@@ -74,6 +73,7 @@ export function HistoryScreen({ state, today, onToggle }: HistoryScreenProps) {
   );
   const trackedDays = monthDates.filter((item) => item.status.kind !== 'none').length;
   const completedDays = monthDates.filter((item) => item.status.kind === 'complete').length;
+  const currentStreak = getCurrentStreak(state, today);
 
   useEffect(() => {
     if (!selectedDate || !selectedStatus || selectedStatus.kind === 'none') return;
@@ -90,47 +90,45 @@ export function HistoryScreen({ state, today, onToggle }: HistoryScreenProps) {
           <p className="eyebrow">History</p>
           <h1>Tracking archive</h1>
           <p className="screen-helper-copy">
-            Review completed days, spot gaps, and correct anything that needs a cleaner record.
+            Review taken days, spot gaps, and correct anything that needs a cleaner record.
           </p>
         </div>
       </header>
 
-      <section className="split-grid history-overview-grid">
-        <article className="panel native-stat-card history-streak-card">
-          <strong>Current streak</strong>
-          <span>{getCurrentStreak(state, today)} days</span>
-          <small className="history-streak-note">Fully completed days in a row</small>
-        </article>
-        <article className="panel native-stat-card history-streak-card">
-          <strong>This month</strong>
-          <span>{completedDays} complete</span>
-          <small className="history-streak-note">{trackedDays} tracked day{trackedDays === 1 ? '' : 's'} so far</small>
-        </article>
+      <section className="history-summary-inline" aria-label="Monthly adherence summary">
+        <span>{currentStreak} day{currentStreak === 1 ? '' : 's'} streak</span>
+        <span aria-hidden="true">·</span>
+        <span>{completedDays} fully taken</span>
+        <span aria-hidden="true">·</span>
+        <span>{trackedDays} tracked day{trackedDays === 1 ? '' : 's'}</span>
       </section>
 
       <section className="panel stack-md native-section-panel history-calendar-shell">
         <div className="history-calendar-toolbar">
           <div className="stack-sm">
             <p className="eyebrow">Monthly view</p>
-            <h2>{formatMonthLabel(month)}</h2>
-          </div>
-          <div className="button-row compact history-calendar-nav">
-            <button
-              className="ghost-button small"
-              type="button"
-              onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))}
-              aria-label="Previous month"
-            >
-              ←
-            </button>
-            <button
-              className="ghost-button small"
-              type="button"
-              onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))}
-              aria-label="Next month"
-            >
-              →
-            </button>
+            <div className="history-month-control">
+              <button
+                className="ghost-button small"
+                type="button"
+                onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))}
+                aria-label="Previous month"
+              >
+                &lt;
+              </button>
+              <h2>{formatMonthLabel(month)}</h2>
+              <button
+                className="ghost-button small"
+                type="button"
+                onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))}
+                aria-label="Next month"
+              >
+                &gt;
+              </button>
+            </div>
+            <p className="history-helper-copy history-calendar-helper">
+              Tap a day to review what was scheduled and update what you took.
+            </p>
           </div>
         </div>
 
@@ -144,14 +142,16 @@ export function HistoryScreen({ state, today, onToggle }: HistoryScreenProps) {
             <div key={`spacer-${index}`} className="calendar-spacer" aria-hidden="true" />
           ))}
           {monthDates.map((item) => {
-            const isTrackedDay = !item.isFuture && item.status.kind !== 'none';
-            const className = `calendar-day ${item.status.kind}${item.isFuture ? ' future' : ''}${selectedDate === item.date ? ' selected' : ''}${isTrackedDay ? ' interactive' : ''}`;
+            const isSelectableDay = !item.isFuture;
+            const statusLabel = getCalendarStatusLabel(item.status.kind);
+            const dayLabel = formatTodayLabel(item.date).full;
+            const className = `calendar-day ${item.status.kind}${item.date === today ? ' today' : ''}${item.isFuture ? ' future' : ''}${selectedDate === item.date ? ' selected' : ''}${isSelectableDay ? ' interactive' : ''}`;
 
-            if (!isTrackedDay) {
+            if (!isSelectableDay) {
               return (
                 <article key={item.date} className={className}>
                   <span>{item.value.getDate()}</span>
-                  <small>{item.isFuture ? '' : getCalendarStatusLabel(item.status.kind)}</small>
+                  <small>{item.isFuture ? '' : statusLabel}</small>
                 </article>
               );
             }
@@ -162,31 +162,41 @@ export function HistoryScreen({ state, today, onToggle }: HistoryScreenProps) {
                 className={className}
                 type="button"
                 onClick={() => setSelectedDate(item.date)}
+                aria-label={`${dayLabel}. ${item.status.kind === 'none' ? 'No medicines scheduled.' : `${statusLabel}.`} Tap to review or update.`}
               >
                 <span>{item.value.getDate()}</span>
-                <small>{getCalendarStatusLabel(item.status.kind)}</small>
+                <small>{statusLabel}</small>
               </button>
             );
           })}
         </div>
       </section>
 
-      {selectedDate && selectedStatus && selectedStatus.kind !== 'none' && (
-        <section ref={selectedDayRef} className="panel stack-md native-section-panel history-detail-shell">
+      <section ref={selectedDayRef} className="panel stack-md native-section-panel history-detail-shell">
+        {!selectedDate || !selectedStatus ? (
+          <div className="history-detail-placeholder">
+            <p className="eyebrow">Editable history</p>
+            <h2>Tap a day to review it</h2>
+            <p className="history-helper-copy">
+              Choose a day in the calendar to mark medicines taken, fix a missed dose, or check what was scheduled.
+            </p>
+          </div>
+        ) : (
+          <>
           <div className="section-head">
             <div className="stack-sm">
               <p className="eyebrow">Editable history</p>
               <h2>{selectedLabel?.full}</h2>
             </div>
             <span className="muted">
-              {selectedStatus.completed} of {selectedStatus.total}
+              {selectedStatus.completed} of {selectedStatus.total} taken
             </span>
           </div>
 
           {selectedGroups.length === 0 ? (
             <div className="empty-panel">
               <h3>No routine for this date</h3>
-              <p>There were no scheduled medications on this day.</p>
+              <p>There were no medicines scheduled on this day.</p>
             </div>
           ) : (
             <>
@@ -207,19 +217,15 @@ export function HistoryScreen({ state, today, onToggle }: HistoryScreenProps) {
                   {group.medications.map((medication) => {
                     const complete = selectedCompletedMedicationIds.has(medication.id);
                     return (
-                      <article key={medication.id} className={`med-card native-med-card med-card-modern${complete ? ' completed' : ''}`}>
+                      <article key={medication.id} className={`medicine-row history-medicine-row${complete ? ' taken' : ' missed'}`}>
                         <div className="med-card-main">
                           <div className="med-card-title">
-                            <div className="med-card-time-icon" aria-hidden="true">
-                              <MedicationTimeIcon option={medication.timeOfDay} />
-                            </div>
                             <div className="med-card-copy">
-                              <p className="eyebrow">{group.slot}</p>
                               <h3>{medication.name}</h3>
-                              <p className="med-meta">{medication.dose}</p>
+                              <p className="med-meta">{medication.dose} · {group.slot}</p>
                               <div className="med-card-status-row">
-                                <span className={`med-card-status-pill${complete ? ' complete' : ''}`}>
-                                  {complete ? 'Logged' : 'Not logged'}
+                                <span className={`med-card-status-pill ${complete ? 'taken' : 'missed'}`}>
+                                  {complete ? 'Taken' : 'Missed'}
                                 </span>
                               </div>
                             </div>
@@ -227,18 +233,16 @@ export function HistoryScreen({ state, today, onToggle }: HistoryScreenProps) {
                           <button
                             className={`toggle-button log-toggle${complete ? ' complete' : ''}`}
                             type="button"
-                            aria-label={`${complete ? 'Mark incomplete' : 'Mark complete'} for ${medication.name} on ${selectedDate}`}
+                            aria-label={`${complete ? 'Mark not taken' : 'Mark taken'} for ${medication.name} on ${selectedDate}`}
                             onClick={() => onToggle(selectedDate, medication.id)}
                           >
                             <LogIcon complete={complete} />
+                            <span className="log-toggle-text">{complete ? 'Taken' : 'Take'}</span>
                           </button>
                         </div>
                         {medication.notes && (
                           <div className="med-card-support">
-                            <div className="med-note-block">
-                              <p className="eyebrow">Note</p>
-                              <p className="med-note">{medication.notes}</p>
-                            </div>
+                            <p className="medicine-note">{medication.notes}</p>
                           </div>
                         )}
                       </article>
@@ -249,8 +253,9 @@ export function HistoryScreen({ state, today, onToggle }: HistoryScreenProps) {
               ))}
             </>
           )}
-        </section>
-      )}
+          </>
+        )}
+      </section>
     </div>
   );
 }

@@ -47,74 +47,84 @@ export function Onboarding({
               </div>
               <p className="eyebrow">Private by design</p>
               <div className="welcome-title-block">
-                <h1>Your medication routine, under control</h1>
+                <h1>Your medicine routine, made simple</h1>
                 <p className="lead">
-                  Track daily doses, stay consistent, and keep your logs local to this device.
+                  Track daily doses, review your routine, and keep everything on this device.
                 </p>
-              </div>
-              <div className="welcome-principles">
-                <span className="detail-chip">
-                  <span className="detail-chip-label">Focused</span>
-                  <span>One clear routine, one-tap logging, no clutter.</span>
-                </span>
-                <span className="detail-chip">
-                  <span className="detail-chip-label">Private</span>
-                  <span>No account, no sync, no backend server.</span>
-                </span>
               </div>
             </header>
 
             <div className="welcome-visual" aria-hidden="true">
-              <div className="visual-hero-card">
-                <div className="visual-card-top">
+              <div className="welcome-preview-card">
+                <div className="welcome-preview-top">
                   <span className="visual-kicker">Today&apos;s routine</span>
-                  <span className="local-chip compact">On this device</span>
+                  <span className="local-chip compact">Private on this device</span>
                 </div>
-                <div className="visual-summary-row">
-                  <div className="visual-summary-block">
+                <div className="welcome-preview-main">
+                  <div className="welcome-preview-title">
                     <strong>Morning</strong>
-                    <span>2 meds ready</span>
+                    <span>2 medicines due next</span>
                   </div>
-                  <div className="visual-summary-block">
+                  <div className="welcome-preview-metric">
                     <strong>25%</strong>
-                    <span>Already logged</span>
+                    <span>Taken today</span>
                   </div>
                 </div>
-                <div className="visual-card-body visual-card-body-left">
-                  <strong>Build once. Check off fast.</strong>
-                  <p>MedOS keeps the daily loop simple, readable, and calm enough to trust at a glance.</p>
+                <div className="welcome-preview-progress" role="presentation">
+                  <span style={{ width: '25%' }} />
                 </div>
-                <div className="visual-med-list">
-                  <div className="visual-med-row">
-                    <span className="visual-footer-pill">
-                      <span className="visual-footer-pill-icon" aria-hidden="true">
+                <div className="welcome-preview-list">
+                  <div className="welcome-preview-row">
+                    <div className="welcome-preview-row-main">
+                      <span className="welcome-preview-icon" aria-hidden="true">
                         <MedicationTimeIcon option="Morning" />
                       </span>
-                      <span>Vitamin D</span>
-                    </span>
+                      <div className="welcome-preview-copy">
+                        <strong>Morning</strong>
+                        <span>2 medicines due now</span>
+                      </div>
+                    </div>
                     <span className="visual-status-pill">Due now</span>
                   </div>
-                  <div className="visual-med-row muted-row">
-                    <span className="visual-footer-pill">
-                      <span className="visual-footer-pill-icon" aria-hidden="true">
-                        <MedicationTimeIcon option="Evening" />
+                  <div className="welcome-preview-row quiet">
+                    <div className="welcome-preview-row-main">
+                      <span className="welcome-preview-icon" aria-hidden="true">
+                        <MedicationTimeIcon option="Bedtime" />
                       </span>
-                      <span>Sertraline</span>
-                    </span>
+                      <div className="welcome-preview-copy">
+                        <strong>Bedtime</strong>
+                        <span>1 medicine coming later</span>
+                      </div>
+                    </div>
                     <span className="visual-status-pill quiet">Later</span>
                   </div>
                 </div>
               </div>
             </div>
 
+            <div className="welcome-value-list" aria-label="Why MedOS">
+              <div className="welcome-value-item">
+                <span className="welcome-value-dot" aria-hidden="true" />
+                <span>One-tap daily tracking</span>
+              </div>
+              <div className="welcome-value-item">
+                <span className="welcome-value-dot" aria-hidden="true" />
+                <span>Private on this device</span>
+              </div>
+              <div className="welcome-value-item">
+                <span className="welcome-value-dot" aria-hidden="true" />
+                <span>Backup anytime</span>
+              </div>
+            </div>
+
             <footer className="welcome-footer">
               <p className="welcome-reassurance">
-                No account. No cloud sync. Backup anytime.
+                No account. No cloud sync.
               </p>
-              <p className="welcome-disclaimer">Personal tracking only. Not medical advice.</p>
               <button className="primary-button welcome-cta activate-button" type="button" onClick={() => setStep(1)}>
-                Set up MedOS <span aria-hidden="true">→</span>
+                Set up my routine
               </button>
+              <p className="welcome-disclaimer">Personal tracking only. Not medical advice.</p>
             </footer>
           </div>
         </section>
@@ -124,10 +134,10 @@ export function Onboarding({
         <section className="panel onboarding-detail-screen">
           <div className="onboarding-detail-body">
             <div className="stack-sm onboarding-detail-header">
-              <p className="eyebrow">Step 2 of 3</p>
+              <p className="eyebrow">Setup 1 of 2</p>
               <h2>Local-first tracking</h2>
               <p className="muted">
-                MedOS stores your medication routine and logs in this browser on this device. There
+                MedOS stores your medicine routine and logs in this browser on this device. There
                 is no account, no backend server, and no cloud sync.
               </p>
             </div>
@@ -139,11 +149,11 @@ export function Onboarding({
               </article>
               <article className="mini-card onboarding-info-card">
                 <strong>Stored locally</strong>
-                <span>Your medications and logs stay in this browser.</span>
+                <span>Your medicines and logs stay in this browser.</span>
               </article>
               <article className="mini-card onboarding-info-card">
                 <strong>Back up anytime</strong>
-                <span>Export your routine and history as a JSON backup.</span>
+                <span>Keep a portable copy of your routine and history whenever you need it.</span>
               </article>
             </div>
 
@@ -171,9 +181,9 @@ export function Onboarding({
           <div className="onboarding-detail-body onboarding-medication-body">
             <MedicationEditor
               ref={editorRef}
-              eyebrow="Step 3 of 3"
-              title="Add medication"
-              submitLabel={editingMedication ? 'Save changes' : 'Add medication'}
+              eyebrow="Setup 2 of 2"
+              title="Add your first medicine"
+              submitLabel={editingMedication ? 'Save changes' : 'Add medicine'}
               initialMedication={editingMedication}
               onSubmit={(draft) => {
                 if (editingMedication) {
@@ -192,14 +202,14 @@ export function Onboarding({
                   ✓
                 </div>
                 <div className="stack-sm">
-                  <p className="eyebrow">Added medications</p>
+                  <p className="eyebrow">Added medicines</p>
                   <h3>Your routine so far</h3>
                 </div>
               </div>
               {medications.length === 0 ? (
                 <div className="empty-panel">
                   <h3>No routine yet</h3>
-                  <p>Add your first medication to start building your daily routine.</p>
+                  <p>Add your first medicine to start building your daily routine.</p>
                 </div>
               ) : (
                 groups.map((group) => (
@@ -267,7 +277,7 @@ export function Onboarding({
               disabled={medications.length === 0}
               onClick={onActivateRoutine}
             >
-              Activate routine
+              {medications.length === 0 ? 'Add one medicine to continue' : 'Continue to Today'}
             </button>
           </div>
         </section>

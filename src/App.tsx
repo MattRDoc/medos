@@ -66,6 +66,20 @@ export default function App() {
   }, [screen]);
 
   useEffect(() => {
+    if (!state.settings.onboardingComplete) return;
+
+    const scrollToTop = () => {
+      window.scrollTo({ top: 0, behavior: 'auto' });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      document.scrollingElement?.scrollTo({ top: 0, behavior: 'auto' });
+    };
+
+    const frame = window.requestAnimationFrame(scrollToTop);
+    return () => window.cancelAnimationFrame(frame);
+  }, [screen, state.settings.onboardingComplete]);
+
+  useEffect(() => {
     const onHashChange = () => {
       const hash = window.location.hash.replace('#/', '');
       if (hash === 'history' || hash === 'routine' || hash === 'settings' || hash === 'today') {
@@ -98,7 +112,7 @@ export default function App() {
   };
 
   const deleteMedication = (id: string) => {
-    if (!window.confirm('Delete this medication from your routine?')) return;
+    if (!window.confirm('Delete this medicine from your routine?')) return;
     setState((current) => ({
       ...current,
       medications: current.medications.filter((medication) => medication.id !== id),
@@ -174,7 +188,7 @@ export default function App() {
   };
 
   const resetData = () => {
-    if (!window.confirm('Reset MedOS and remove local medications, logs, and settings?')) return;
+    if (!window.confirm('Reset MedOS and remove local medicines, logs, and settings?')) return;
     setState(defaultState);
     setScreen('today');
   };

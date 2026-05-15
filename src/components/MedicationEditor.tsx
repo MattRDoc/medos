@@ -1,5 +1,6 @@
 import { forwardRef, useEffect, useState } from 'react';
 import type { Medication, MedicationDraft, TimeOfDay } from '../types';
+import { TimeWindowIcon } from './TimeWindowIcon';
 
 const timeOptions: TimeOfDay[] = ['Morning', 'Afternoon', 'Evening', 'Bedtime'];
 export const blankDraft: MedicationDraft = {
@@ -29,48 +30,8 @@ function toDraft(medication?: Medication): MedicationDraft {
   };
 }
 
-function TimeIcon({ option }: { option: TimeOfDay }) {
-  if (option === 'Morning') {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="12" cy="12" r="4.25" />
-        <path d="M12 2.75v3.1M12 18.15v3.1M21.25 12h-3.1M5.85 12h-3.1M18.54 5.46l-2.2 2.2M7.66 16.34l-2.2 2.2M18.54 18.54l-2.2-2.2M7.66 7.66l-2.2-2.2" />
-      </svg>
-    );
-  }
-
-  if (option === 'Afternoon') {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M12 4.25a7.75 7.75 0 1 1 0 15.5Z" />
-        <path d="M12 4.25a7.75 7.75 0 0 0 0 15.5" fill="none" />
-      </svg>
-    );
-  }
-
-  if (option === 'Evening') {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M4 14.25h16" />
-        <path d="M8 14.25a4 4 0 1 1 8 0" />
-        <path d="M7 18.25h10" />
-      </svg>
-    );
-  }
-
-  if (option === 'Bedtime') {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M15.8 4.5a6.9 6.9 0 1 0 3.7 12.75A7.6 7.6 0 1 1 15.8 4.5Z" />
-      </svg>
-    );
-  }
-
-  return null;
-}
-
 export function MedicationTimeIcon({ option }: { option: TimeOfDay }) {
-  return <TimeIcon option={option} />;
+  return <TimeWindowIcon option={option} />;
 }
 
 interface MedicationEditorProps {
@@ -85,7 +46,7 @@ interface MedicationEditorProps {
 
 export const MedicationEditor = forwardRef<HTMLElement, MedicationEditorProps>(function MedicationEditor(
   {
-    eyebrow = 'Medication',
+    eyebrow = 'Medicine',
     title,
     submitLabel,
     initialMedication,
@@ -119,10 +80,10 @@ export const MedicationEditor = forwardRef<HTMLElement, MedicationEditorProps>(f
         }}
       >
           <label className="field">
-            <span className="field-label">Medication name</span>
+            <span className="field-label">Medicine name</span>
             <input
-              aria-label="Medication name"
-              placeholder="Medication name"
+              aria-label="Medicine name"
+              placeholder="Medicine name"
             required
             value={draft.name}
             onChange={(event) => setDraft({ ...draft, name: event.target.value })}
@@ -152,7 +113,7 @@ export const MedicationEditor = forwardRef<HTMLElement, MedicationEditorProps>(f
                   onClick={() => setDraft({ ...draft, timeOfDay: option })}
                 >
                   <span className="time-pill-icon" aria-hidden="true">
-                    <TimeIcon option={option} />
+                    <TimeWindowIcon option={option} />
                   </span>
                   <strong>{option}</strong>
                 </button>
@@ -162,9 +123,9 @@ export const MedicationEditor = forwardRef<HTMLElement, MedicationEditorProps>(f
         </div>
 
         <label className="field">
-          <span className="field-label">Optional notes or instructions</span>
+          <span className="field-label">Instructions</span>
           <textarea
-            aria-label="Optional notes or instructions"
+            aria-label="Instructions"
             placeholder="e.g. Take on an empty stomach"
             rows={3}
             value={draft.notes}

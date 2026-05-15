@@ -2601,17 +2601,82 @@ p {
 
   .welcome-frame {
     align-content: start;
-    gap: 18px;
+    gap: 22px;
+    max-width: 390px;
+  }
+
+  .welcome-header {
+    gap: 14px;
+  }
+
+  .welcome-title-block {
+    gap: 12px;
+  }
+
+  .welcome-title-block h1 {
+    max-width: 100%;
+    font-size: clamp(2rem, 9.2vw, 2.7rem);
+    line-height: 1;
+  }
+
+  .welcome-title-block .lead {
+    max-width: 100%;
+    font-size: 0.96rem;
+    line-height: 1.55;
   }
 
   .welcome-visual {
-    min-height: clamp(244px, 34vh, 312px);
+    min-height: clamp(228px, 30vh, 280px);
+    margin: 4px 0;
+  }
+
+  .orbit-a {
+    width: min(78vw, 292px);
+    height: min(78vw, 292px);
+  }
+
+  .orbit-b {
+    width: min(62vw, 224px);
+    height: min(62vw, 224px);
   }
 
   .visual-hero-card {
-    width: min(100%, 312px);
+    width: min(100%, 300px);
     border-radius: 28px;
-    padding: 16px;
+    padding: 14px;
+    gap: 10px;
+  }
+
+  .visual-ring {
+    width: clamp(142px, 39vw, 166px);
+  }
+
+  .visual-ring-core {
+    width: clamp(106px, 30vw, 122px);
+  }
+
+  .visual-card-body p {
+    font-size: 0.84rem;
+    line-height: 1.4;
+  }
+
+  .visual-card-footer {
+    gap: 6px;
+  }
+
+  .visual-footer-pill {
+    padding: 6px 10px;
+    font-size: 0.69rem;
+  }
+
+  .welcome-footer {
+    gap: 10px;
+    margin-top: 0;
+  }
+
+  .welcome-reassurance {
+    font-size: 0.88rem;
+    line-height: 1.4;
   }
 
   .onboarding-detail-screen {

@@ -165,7 +165,7 @@ button {
   padding:
     max(24px, calc(var(--safe-top) + 12px))
     max(16px, calc(var(--safe-right) + 16px))
-    calc(154px + var(--safe-bottom))
+    calc(132px + var(--safe-bottom))
     max(16px, calc(var(--safe-left) + 16px));
   background: transparent;
 }
@@ -2258,14 +2258,14 @@ p {
 .bottom-nav {
   position: fixed;
   left: 50%;
-  bottom: max(0px, calc(var(--safe-bottom) - 2px));
+  bottom: max(0px, calc(var(--safe-bottom) - 6px));
   transform: translateX(-50%);
   width: min(calc(100% - max(24px, calc(var(--safe-left) + var(--safe-right) + 24px))), 420px);
-  border-radius: 30px;
-  padding: 10px 12px;
+  border-radius: 26px;
+  padding: 8px 10px;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 6px;
+  gap: 4px;
   background: var(--nav-surface);
   border-color: var(--nav-border);
   box-shadow: var(--nav-shadow);
@@ -2273,17 +2273,17 @@ p {
 }
 
 .nav-item {
-  min-height: 58px;
-  border-radius: 20px;
+  min-height: 52px;
+  border-radius: 18px;
   background: transparent;
   color: var(--muted);
   display: grid;
   justify-items: center;
   align-content: center;
-  gap: 5px;
+  gap: 4px;
   border-color: transparent;
   box-shadow: none;
-  padding: 8px 4px;
+  padding: 6px 4px;
 }
 
 .nav-item.active {
@@ -2305,7 +2305,7 @@ p {
 }
 
 .nav-item span:last-child {
-  font-size: 0.84rem;
+  font-size: 0.8rem;
 }
 
 .notice-card {
